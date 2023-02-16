@@ -10,7 +10,7 @@
 
 ![PowerShell Gallery](https://img.shields.io/powershellgallery/dt/HistoryNinja)
 ![PowerShell Gallery Version](https://img.shields.io/powershellgallery/v/HistoryNinja)
-![GitHub commits since latest release (by date)](https://img.shields.io/github/commits-since/JCKELLEY-CYBR/HistoryNinja/latest)
+![GitHub commits since latest release (by date)](https://img.shields.io/github/commits-since/JCKelley-CYBR/HistoryNinja/latest)
 
 ## Description
 This script parses browser history files and extracts page titles, URLs, and timestamps. It also parses the history file for download history, returning the file path, timestamp, and size of the downloaded item. 
