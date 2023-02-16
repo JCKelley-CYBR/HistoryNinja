@@ -40,6 +40,13 @@ This script parses browser history files and extracts page titles, URLs, and tim
    * `PS> Import-Module HistoryNinja`
      * Next, check the module's help: `PS> Get-HistoryNinja -h`
 
+## Compatibility
+This module has been tested on the following browsers:
+* Chrome
+* Firefox
+* Edge
+
+The module will *likely* work on other **electron/chromium** based browsers, but has not been tested.
 
 ## Usage
 ```powershell
