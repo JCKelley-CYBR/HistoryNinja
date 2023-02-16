@@ -1,7 +1,7 @@
 ###################
 # History Ninja - HistoryParser.ps1
 # Author: Joshua C. Kelley
-# Version: 1.0.0
+# Version: 1.0.1
 # Last Updated: 2023-02-14
 # Creation Date: 2023-01-04
 # Description: This script will locate the history file for the current user and return the path to the file.
@@ -11,7 +11,7 @@
 
 ###################
 # Change Log:
-# Version 1.0 - 2023-01-04: Initial Creation
+# Version 1.0.0 - 2023-01-04: Initial Creation
 # - Added the ability to search for a specific date range. Added the ability to search for a specific path.
 # - Added the ability to search for a specific username. Added the ability to search for a specific browser.
 # - Added the ability to search for a specific URL. Added the ability to search download history.
@@ -28,7 +28,7 @@ Import-Module PSSQLite
 ###################
 
 # Script Attributes
-$versionOut = "1.0.0"
+$versionOut = "1.0.1"
 $authorOut = "Joshua C. Kelley"
 
 # Banner Function  
@@ -79,7 +79,7 @@ function Get-TimeRange {
 # Parameters: $date
 # Returns: $temp (datetime)
 ###################
-function Set-TimeCov {
+function Get-TimeConversion {
     param (
         [Parameter(Mandatory=$true)]
         [string]$date
@@ -96,7 +96,7 @@ function Set-TimeCov {
 # Parameters: $fileLocation
 # Returns: $history (array of history records)
 ###################
-function Get-History {
+function Get-BrowserHistory {
     param (
         [Parameter(Mandatory=$true)]
         [string]$fileLocation
@@ -108,8 +108,8 @@ function Get-History {
             $history = Invoke-SqliteQuery -path $fileLocation -Query "SELECT * FROM downloads"
             $arr = @()
             foreach ($record in $history) {
-                $record.start_time = Set-TimeCov -date $record.start_time
-                $record.end_time = Set-TimeCov -date $record.end_time
+                $record.start_time = Get-TimeConversion -date $record.start_time
+                $record.end_time = Get-TimeConversion -date $record.end_time
                 $arr += $record
             }
         }
@@ -118,7 +118,7 @@ function Get-History {
             $history = Invoke-SqliteQuery -path $fileLocation -Query "SELECT * FROM urls"
             $arr = @()
             foreach ($record in $history) {
-                $record.last_visit_time = Set-TimeCov -date $record.last_visit_time
+                $record.last_visit_time = Get-TimeConversion -date $record.last_visit_time
                 $arr += $record
             }
         }    
@@ -134,7 +134,7 @@ function Get-History {
 # Parameters: $fileLocation, $date
 # Returns: $history (array of history records)
 ###################
-function Get-HistoryDate {
+function Get-BrowserHistoryDate {
     param (
         [Parameter(Mandatory=$true)]
         [string]$fileLocation,
@@ -183,7 +183,7 @@ function Get-HistoryDate {
 # Parameters: $fileLocation
 # Returns: $arr (array of history records)
 ###################
-function Get-HistoryFirefox {
+function Get-BrowserHistoryFirefox {
     param (
         [Parameter(Mandatory=$true)]
         [string]$fileLocation
@@ -202,8 +202,8 @@ function Get-HistoryFirefox {
                 $history = Invoke-SqliteQuery -path $fileLocation -Query "SELECT * FROM moz_annos"
                 $arr = @()
                 foreach ($record in $history) {
-                    $record.dateAdded = Set-DateTimeff -epoch $record.dateAdded
-                    $record.lastModified = Set-DateTimeff -epoch $record.lastModified
+                    $record.dateAdded = Get-DateTimeFF -epoch $record.dateAdded
+                    $record.lastModified = Get-DateTimeFF -epoch $record.lastModified
                     $arr += $record
                 }
             }
@@ -212,7 +212,7 @@ function Get-HistoryFirefox {
                 $history = Invoke-SqliteQuery -path $fileLocation -Query "SELECT * FROM moz_places"
                 $arr = @()
                 foreach ($record in $history) {
-                    $record.last_visit_date = Set-DateTimeff -epoch $record.last_visit_date
+                    $record.last_visit_date = Get-DateTimeFF -epoch $record.last_visit_date
                     $arr += $record
                 }
             }
@@ -229,7 +229,7 @@ function Get-HistoryFirefox {
 # Parameters: $fileLocation, $date
 # Returns: $arr (array of history records)
 ###################
-function Get-HistoryFirefoxDate {
+function Get-BrowserHistoryFirefoxDate {
     param (
         [Parameter(Mandatory=$true)]
         [string]$fileLocation,
@@ -249,8 +249,8 @@ function Get-HistoryFirefoxDate {
             $history = Invoke-SqliteQuery -path $fileLocation -Query "SELECT * FROM moz_annos WHERE dateAdded > $date"
             $arr = @()
             foreach ($record in $history) {
-                $record.dateAdded = Set-DateTimeff -epoch $record.dateAdded
-                $record.lastModified = Set-DateTimeff -epoch $record.lastModified
+                $record.dateAdded = Get-DateTimeFF -epoch $record.dateAdded
+                $record.lastModified = Get-DateTimeFF -epoch $record.lastModified
                 $arr += $record
             }
         }
@@ -259,7 +259,7 @@ function Get-HistoryFirefoxDate {
             $history = Invoke-SqliteQuery -path $fileLocation -Query "SELECT * FROM moz_places WHERE last_visit_date > $date"
             $arr = @()
             foreach ($record in $history) {
-                $record.last_visit_date = Set-DateTimeff -epoch $record.last_visit_date
+                $record.last_visit_date = Get-DateTimeFF -epoch $record.last_visit_date
                 $arr += $record
             }
         }
@@ -272,7 +272,7 @@ function Get-HistoryFirefoxDate {
 # Parameters: $epoch
 # Returns: $date (datetime)
 ###################
-function Set-DateTimeff {
+function Get-DateTimeFF {
     param (
         [Parameter(Mandatory=$true)]
         [string]$epoch
@@ -308,13 +308,13 @@ function Get-HelpOutput {
             If a date is provided, the script will return the contents of the history file after the specified date.
 
         Usage: .\HistoryParser.ps1
-            Example (1): Get-HistoryNinja -p 'C:\Users\<User ID>\AppData\Local\Google\Chrome\User Data\Default\History' -d <from date>
+            Example (1): Get-BrowserHistoryNinja -p 'C:\Users\<User ID>\AppData\Local\Google\Chrome\User Data\Default\History' -d <from date>
                 Returns the contents of the history file, from the provided path, after 12/31/2022.
 
-            Example (2): Get-HistoryNinja -u <User ID> -d 12/31/2022 -b chrome
+            Example (2): Get-BrowserHistoryNinja -u <User ID> -d 12/31/2022 -b chrome
                 Returns the contents of the history file (chrome), for the provided user and browser, after 12/31/2022.
 
-            Example (3): Get-HistoryNinja -u <User ID> -b firefox -dl
+            Example (3): Get-BrowserHistoryNinja -u <User ID> -b firefox -dl
                 Returns the contents of the download history file (firefox), for the provided user and browser.
 
         Parameters:
@@ -352,7 +352,7 @@ function Get-HelpOutput {
 # Returns: $history (array), or $history is output to a file (-o). 
 ###################
 
-function Get-HistoryNinja {
+function Get-BrowserHistoryNinja {
     param (
         [Parameter(Mandatory=$false)]
         [string]$p, # Path
@@ -408,20 +408,20 @@ function Get-HistoryNinja {
         $temp = Split-Path $p -leaf
         if ($temp -eq "places.sqlite") {
             if ($d -eq '') {
-                $History = Get-HistoryFirefox -fileLocation $p
+                $History = Get-BrowserHistoryFirefox -fileLocation $p
             }
             else {
                 $out = Get-EpochTimeff -date $d
-                $History = Get-HistoryFirefoxDate -fileLocation $p -date $out
+                $History = Get-BrowserHistoryFirefoxDate -fileLocation $p -date $out
             }
         }
         else{
             if ($d -eq '') {
-                $History = Get-History -fileLocation $p
+                $History = Get-BrowserHistory -fileLocation $p
             }
             else {
                 $out = Get-TimeRange -date $d
-                $History = Get-HistoryDate -fileLocation $p -date $out
+                $History = Get-BrowserHistoryDate -fileLocation $p -date $out
             }
         }
     }
@@ -433,13 +433,13 @@ function Get-HistoryNinja {
                 if ($d -eq '')
                 {
                     if ($b.ToLower() -eq "chrome") {
-                        $History = Get-History -fileLocation $chrome
+                        $History = Get-BrowserHistory -fileLocation $chrome
                     }
                     elseif ($b.ToLower() -eq "firefox") {
-                        $History = Get-HistoryFirefox -fileLocation $firefox
+                        $History = Get-BrowserHistoryFirefox -fileLocation $firefox
                     }
                     elseif ($b.ToLower() -eq "edge") {
-                        $History = Get-History -fileLocation $edge
+                        $History = Get-BrowserHistory -fileLocation $edge
                     }
                     else {
                         Write-Output "Browser not found. Use -browser Chrome, Firefox, or Edge."
@@ -448,15 +448,15 @@ function Get-HistoryNinja {
                 else {
                     if ($b.ToLower()  -eq "chrome") {
                         $out = Get-TimeRange -date $d
-                        $History = Get-HistoryDate -fileLocation $chrome -date $out
+                        $History = Get-BrowserHistoryDate -fileLocation $chrome -date $out
                     }
                     elseif ($b.ToLower()  -eq "firefox") {
                         $out = Get-EpochTimeff -date $d
-                        $History = Get-HistoryFirefoxDate -fileLocation $firefox -date $out
+                        $History = Get-BrowserHistoryFirefoxDate -fileLocation $firefox -date $out
                     }
                     elseif ($b.ToLower()  -eq "edge") {
                         $out = Get-TimeRange -date $d
-                        $History = Get-HistoryDate -fileLocation $edge -date $out
+                        $History = Get-BrowserHistoryDate -fileLocation $edge -date $out
                     }
                     else {
                         Write-Output "Browser not found. Use -b Chrome, Firefox, or Edge."
@@ -477,24 +477,24 @@ function Get-HistoryNinja {
         if ($o.ToLower() -eq 'csv') {
             $History | Export-Csv -Path "$pwd\History.csv" -NoTypeInformation
             if (!$s) {
-                Write-Host "Output saved to $pwd\History.csv" -ForegroundColor Green
+                Write-Output "Output saved to $pwd\History.csv"
             }
         }
         elseif ($o.ToLower() -eq 'txt') {
             $History | Out-File -FilePath "$pwd\History.txt"
             if (!$s) {
-                Write-Host "Output saved to $pwd\History.txt" -ForegroundColor Green
+                Write-Output "Output saved to $pwd\History.txt"
             }
         }
         elseif ($o.ToLower() -eq 'json') {
             $History | ConvertTo-Json | Out-File -FilePath "$pwd\History.json"
             if (!$s) {
-                Write-Host "Output saved to $pwd\History.json" -ForegroundColor Green
+                Write-Output "Output saved to $pwd\History.json"
             }
         }
         else
         {
-            Write-Host "Output format not found. Use -o CSV, TXT, or JSON. Or do not use -o, to output to the console" -ForegroundColor Red
+            Write-Output "Output format not found. Use -o CSV, TXT, or JSON. Or do not use -o, to output to the console"
         }
     }
     else {

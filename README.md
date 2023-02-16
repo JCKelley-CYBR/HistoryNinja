@@ -8,11 +8,12 @@
         VERSION: 1.0
 
 
-![PowerShell Gallery](https://img.shields.io/powershellgallery/dt/psfalcon)
-![PowerShell Gallery Version](https://img.shields.io/powershellgallery/v/psfalcon)
-![GitHub commits since latest release (by date)](https://img.shields.io/github/commits-since/crowdstrike/psfalcon/latest)
+![PowerShell Gallery](https://img.shields.io/powershellgallery/dt/HistoryNinja)
+![PowerShell Gallery Version](https://img.shields.io/powershellgallery/v/HistoryNinja)
+![GitHub commits since latest release (by date)](https://img.shields.io/github/commits-since/JCKELLEY-CYBR/HistoryNinja/latest)
+
 ## Description
-This script parses browsers history files and extracts page titles, URLs, and timestamps. It also parses the history file for download history returning the file path, timestamp, and size of the downloaded item. 
+This script parses browser history files and extracts page titles, URLs, and timestamps. It also parses the history file for download history, returning the file path, timestamp, and size of the downloaded item. 
 
 ## Requirements
 * PowerShell 5.0 or higher
@@ -28,7 +29,7 @@ This script parses browsers history files and extracts page titles, URLs, and ti
    * `HistoryNinja.psm1` - This is the module.
    * `README.md` - This file you are currently reading.
 #### 3. Copy the `HistoryNinja` folder to one of the following locations:
-   * `$env:PSModulePath` - any of this folders will do.
+   * `$env:PSModulePath` - any of these folders will do.
 #### 4. Open a PowerShell console and run the following command to import the module:
    * `PS> Import-Module HistoryNinja`
      * Next, check the module's help: `PS> Get-HistoryNinja -h`
@@ -39,7 +40,7 @@ This script parses browsers history files and extracts page titles, URLs, and ti
 PS C:\> Get-HistoryNinja -b <browser name> -u <username> -o <output file type>
 ```
 
-The use of -u requires the command to also include a -b parameter, and vice versa -b requires he command to also include a -u parameter.
+The use of -u requires the command also to include a -b parameter, and vice versa -b requires the command also to include a -u parameter.
 
 ```powershell
 PS C:\> Get-HistoryNinja -p <Path> -d <From Date> -o <output file type>
@@ -52,9 +53,9 @@ PS C:\> Get-HistoryNinja -p <Path> -d <From Date> -o <output file type>
 | -p | Set path of history file to parse. |
 | -d | Set history from date. |
 | -u | Username of the user to parse. |
-| -b | Browser to parse. Currently only Chrome is supported. |
+| -b | Browser to parse. Currently, only Chrome is supported. |
 | -dl | Output browser download history. |
-| -o | Output file type. Currently only CSV, TXT, and JSON is supported. |
+| -o | Output file type. Currently, only CSV, TXT, and JSON are supported. |
 | -h | Displays this help message. |
 | -a | Displays the author of the script. |
 | -v | Displays the version of the script. |
