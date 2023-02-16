@@ -1,7 +1,7 @@
 ###################
 # History Ninja - HistoryParser.ps1
 # Author: Joshua C. Kelley
-# Version: 1.1
+# Version: 1.0.0
 # Last Updated: 2023-02-14
 # Creation Date: 2023-01-04
 # Description: This script will locate the history file for the current user and return the path to the file.
@@ -16,7 +16,7 @@
 # - Added the ability to search for a specific username. Added the ability to search for a specific browser.
 # - Added the ability to search for a specific URL. Added the ability to search download history.
 # - Added the ability to output the results to a CSV, TXT, and JSON file.
-# Version 1.1 - 2023-02-14: Added History Ninja Banner
+# - Added History Ninja Banner
 # - Added the History Ninja Banner to the script.
 # - Update output to use current working directory.
 ###################
@@ -28,7 +28,7 @@ Import-Module PSSQLite
 ###################
 
 # Script Attributes
-$versionOut = "1.1"
+$versionOut = "1.0.0"
 $authorOut = "Joshua C. Kelley"
 
 # Banner Function  
@@ -56,7 +56,6 @@ function Get-Userpath {
         [Parameter(Mandatory=$true)]
         [string]$username
     )
-    # $userpath = Get-ChildItem -path C:\Users -Directory | Select-Object Name, FullName, LastWriteTime | Where-Object {$_.Name -eq $u}
     return Test-path "C:\Users\$username"
 }
 
