@@ -352,7 +352,7 @@ function Get-HelpOutput {
 # Returns: $history (array), or $history is output to a file (-o). 
 ###################
 
-function Get-BrowserHistoryNinja {
+function Get-HistoryNinja {
     param (
         [Parameter(Mandatory=$false)]
         [string]$p, # Path
