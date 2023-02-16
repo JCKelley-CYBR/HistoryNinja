@@ -1,7 +1,7 @@
 ###################
 # History Ninja - HistoryParser.ps1
 # Author: Joshua C. Kelley
-# Version: 1.0.1
+# Version: 1.0.2
 # Last Updated: 2023-02-14
 # Creation Date: 2023-01-04
 # Description: This script will locate the history file for the current user and return the path to the file.
