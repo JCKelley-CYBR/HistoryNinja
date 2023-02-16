@@ -24,6 +24,11 @@ This script parses browser history files and extracts page titles, URLs, and tim
   * `PS> Install-Module -Name PSSQLite`
 
 ## Installation
+### PS Gallery Installation
+#### 1. Open a PowerShell console and run the following command to install the module:
+   * `PS> Install-Module -Name HistoryNinja`
+    * This will install the module from the [PowerShell Gallery](https://www.powershellgallery.com/packages/HistoryNinja/) and the dependencies.
+### Manual Installation
 #### 1. Download the latest release of: [HistoryNinja.psm1](HistoryNinja.psm1) script.
 #### 2. Unzip the contents of the archive. You should have a folder named `HistoryNinja` with the following files:
    * `HistoryNinja.psd1` - This is the module manifest.
