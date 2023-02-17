@@ -106,10 +106,13 @@ function Get-BrowserHistory {
         if ($dl)
         {
             $history = Invoke-SqliteQuery -path $fileLocation -Query "SELECT * FROM downloads"
+            $urlHistory = Invoke-SqliteQuery -path $fileLocation -Query "SELECT * FROM downloads_url_chains"
             $arr = @()
             foreach ($record in $history) {
                 $record.start_time = Get-TimeConversion -date $record.start_time
                 $record.end_time = Get-TimeConversion -date $record.end_time
+                $temp = $urlHistory | Where-Object { $_.id -eq $record.id } | Select-Object -ExpandProperty url
+                $record | Add-Member -MemberType NoteProperty -Name "DownloadURL" -Value $temp
                 $arr += $record
             }
         }
@@ -146,15 +149,13 @@ function Get-BrowserHistoryDate {
         if ($dl)
         {
             $history = Invoke-SqliteQuery -path $fileLocation -Query "SELECT * FROM downloads WHERE start_time > $date"
+            $urlHistory = Invoke-SqliteQuery -path $fileLocation -Query "SELECT * FROM downloads_url_chains"
             $arr = @()
             foreach ($record in $history) {
-                $start = $record.start_time/1000000
-                $end = $record.end_time/1000000
-                $record.start_time = ((Get-Date 01.01.1601).AddSeconds($start)).ToString("yyyy-MM-dd HH:mm:ss")
-                $record.end_time = ((Get-Date 01.01.1601).AddSeconds($end)).ToString("yyyy-MM-dd HH:mm:ss")
-                $tzone = Get-TimeZone -Id "Central Standard Time"
-                $record.start_time = [System.DateTime]::Parse($record.start_time).AddHours($tzone.BaseUtcOffset.Hours)
-                $record.end_time = [System.DateTime]::Parse($record.end_time).AddHours($tzone.BaseUtcOffset.Hours)
+                $record.start_time = Get-TimeConversion -date $record.start_time
+                $record.end_time = Get-TimeConversion -date $record.end_time
+                $temp = $urlHistory | Where-Object { $_.id -eq $record.id } | Select-Object -ExpandProperty url
+                $record | Add-Member -MemberType NoteProperty -Name "DownloadURL" -Value $temp
                 $arr += $record
             }
         }
@@ -163,10 +164,7 @@ function Get-BrowserHistoryDate {
             $history = Invoke-SqliteQuery -path $fileLocation -Query "SELECT * FROM urls WHERE last_visit_time > $date"
             $arr = @()
             foreach ($record in $history) {
-                $temp = $record.last_visit_time/1000000
-                $record.last_visit_time = ((Get-Date 01.01.1601).AddSeconds($temp)).ToString("yyyy-MM-dd HH:mm:ss")
-                $tzone = Get-TimeZone -Id "Central Standard Time"
-                $record.last_visit_time = [System.DateTime]::Parse($record.last_visit_time).AddHours($tzone.BaseUtcOffset.Hours)
+                $record.last_visit_time = Get-TimeConversion -date $record.last_visit_time
                 $arr += $record
             }
         }
@@ -200,11 +198,19 @@ function Get-BrowserHistoryFirefox {
             if ($dl)
             {
                 $history = Invoke-SqliteQuery -path $fileLocation -Query "SELECT * FROM moz_annos"
+                $urlHistory = Invoke-SqliteQuery -path $fileLocation -Query "SELECT * FROM moz_places"
                 $arr = @()
                 foreach ($record in $history) {
-                    $record.dateAdded = Get-DateTimeFF -epoch $record.dateAdded
-                    $record.lastModified = Get-DateTimeFF -epoch $record.lastModified
-                    $arr += $record
+                    if (($record.anno_attribute_id -eq 2) -and ($arr[-1].place_id -eq $record.place_id)) {
+                        $arr[-1] | Add-Member -MemberType NoteProperty -Name "File_Status" -Value $record.content
+                    }
+                    else {
+                        $record.dateAdded = Get-DateTimeFF -epoch $record.dateAdded
+                        $record.lastModified = Get-DateTimeFF -epoch $record.lastModified
+                        $temp = $urlHistory | Where-Object { $_.id -eq $record.place_id } | Select-Object -ExpandProperty url
+                        $record | Add-Member -MemberType NoteProperty -Name "DownloadURL" -Value $temp
+                        $arr += $record
+                    }
                 }
             }
             else
@@ -247,11 +253,21 @@ function Get-BrowserHistoryFirefoxDate {
         if ($dl)
         {
             $history = Invoke-SqliteQuery -path $fileLocation -Query "SELECT * FROM moz_annos WHERE dateAdded > $date"
+            $urlHistory = Invoke-SqliteQuery -path $fileLocation -Query "SELECT * FROM moz_places"
             $arr = @()
             foreach ($record in $history) {
-                $record.dateAdded = Get-DateTimeFF -epoch $record.dateAdded
-                $record.lastModified = Get-DateTimeFF -epoch $record.lastModified
-                $arr += $record
+                if (($record.anno_attribute_id -eq 2) -and ($arr[-1].place_id -eq $record.place_id)) {
+                    $arr[-1] | Add-Member -MemberType NoteProperty -Name "File_Status" -Value $record.content
+                }
+                else {
+                    $record.dateAdded = Get-DateTimeFF -epoch $record.dateAdded
+                    $record.lastModified = Get-DateTimeFF -epoch $record.lastModified
+
+                    $temp = $urlHistory | Where-Object { $_.id -eq $record.place_id } | Select-Object -ExpandProperty url
+                    $record | Add-Member -MemberType NoteProperty -Name "DownloadURL" -Value $temp
+
+                    $arr += $record
+                }
             }
         }
         else
@@ -351,7 +367,6 @@ function Get-HelpOutput {
 # $s: Suppress all output to the console.
 # Returns: $history (array), or $history is output to a file (-o). 
 ###################
-
 function Get-HistoryNinja {
     param (
         [Parameter(Mandatory=$false)]
