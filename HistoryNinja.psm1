@@ -1,7 +1,7 @@
 ###################
 # History Ninja - HistoryParser.ps1
 # Author: Joshua C. Kelley
-# Version: 1.0.2
+# Version: 1.0.3
 # Last Updated: 2023-02-14
 # Creation Date: 2023-01-04
 # Description: This script will locate the history file for the current user and return the path to the file.
@@ -19,6 +19,14 @@
 # - Added History Ninja Banner
 # - Added the History Ninja Banner to the script.
 # - Update output to use current working directory.
+# Version 1.0.1 - Fixing silly mistakes.
+# Version 1.0.2 - Fixing even sillier mistake when refactoring.
+# - Fixed oopsie where I accidentally change the main function name from Get-HistoryNinja to Get-BrowserHistoryNinja.
+# Version 1.0.3 - 2023-02-16:
+# - Added association between urls and downloads when outputting download records. (Electron Browsers)
+# - Added association between moz_places and moz_annos, essentially adding download URL information to the download records. (Firefox)
+# - Added association between moz_annos records, essentially firefox download records store each download in more than one record. By combining the unique fields, we can get the full download record. (Firefox)
+# - Added progress bar to show progress of the processing of records.
 ###################
 
 Import-Module PSSQLite
@@ -28,7 +36,7 @@ Import-Module PSSQLite
 ###################
 
 # Script Attributes
-$versionOut = "1.0.1"
+$versionOut = "1.0.3"
 $authorOut = "Joshua C. Kelley"
 
 # Banner Function
