@@ -1,7 +1,7 @@
 ###################
 # History Ninja - HistoryParser.ps1
 # Author: Joshua C. Kelley
-# Version: 1.0.2
+# Version: 1.0.3
 # Last Updated: 2023-02-14
 # Creation Date: 2023-01-04
 # Description: This script will locate the history file for the current user and return the path to the file.
@@ -19,6 +19,14 @@
 # - Added History Ninja Banner
 # - Added the History Ninja Banner to the script.
 # - Update output to use current working directory.
+# Version 1.0.1 - Fixing silly mistakes.
+# Version 1.0.2 - Fixing even sillier mistake when refactoring.
+# - Fixed oopsie where I accidentally change the main function name from Get-HistoryNinja to Get-BrowserHistoryNinja.
+# Version 1.0.3 - 2023-02-16:
+# - Added association between urls and downloads when outputting download records. (Electron Browsers)
+# - Added association between moz_places and moz_annos, essentially adding download URL information to the download records. (Firefox)
+# - Added association between moz_annos records, essentially firefox download records store each download in more than one record. By combining the unique fields, we can get the full download record. (Firefox)
+# - Added progress bar to show progress of the processing of records.
 ###################
 
 Import-Module PSSQLite
@@ -28,18 +36,18 @@ Import-Module PSSQLite
 ###################
 
 # Script Attributes
-$versionOut = "1.0.1"
+$versionOut = "1.0.3"
 $authorOut = "Joshua C. Kelley"
 
-# Banner Function  
+# Banner Function
 $banner = @"
 
-        __  ___      __                      _   ___         _      
+        __  ___      __                      _   ___         _
        / / / (_)____/ /_____  _______  __   / | / (_)___    (_)___ _
       / /_/ / / ___/ __/ __ \/ ___/ / / /  /  |/ / / __ \  / / __ `/
-     / __  / (__  ) /_/ /_/ / /  / /_/ /  / /|  / / / / / / / /_/ / 
-    /_/ /_/_/____/\__/\____/_/   \__, /  /_/ |_/_/_/ /_/_/ /\__,_/  
-                                /____/                /___/         
+     / __  / (__  ) /_/ /_/ / /  / /_/ /  / /|  / / / / / / / /_/ /
+    /_/ /_/_/____/\__/\____/_/   \__, /  /_/ |_/_/_/ /_/_/ /\__,_/
+                                /____/                /___/
 
         BY: $authorOut
         VERSION: $versionOut
@@ -106,10 +114,16 @@ function Get-BrowserHistory {
         if ($dl)
         {
             $history = Invoke-SqliteQuery -path $fileLocation -Query "SELECT * FROM downloads"
+            $urlHistory = Invoke-SqliteQuery -path $fileLocation -Query "SELECT * FROM downloads_url_chains"
             $arr = @()
+            $hist_count = $history.Count
             foreach ($record in $history) {
+                $progress = $arr.Count
+                Write-Progress -Activity "HistoryNinja waiting room." -Status "Processing Browser Download History: $progress of $hist_count" -PercentComplete ($progress/$hist_count*100)
                 $record.start_time = Get-TimeConversion -date $record.start_time
                 $record.end_time = Get-TimeConversion -date $record.end_time
+                $temp = $urlHistory | Where-Object { $_.id -eq $record.id } | Select-Object -ExpandProperty url
+                $record | Add-Member -MemberType NoteProperty -Name "DownloadURL" -Value $temp
                 $arr += $record
             }
         }
@@ -117,11 +131,14 @@ function Get-BrowserHistory {
         {
             $history = Invoke-SqliteQuery -path $fileLocation -Query "SELECT * FROM urls"
             $arr = @()
+            $hist_count = $history.Count
             foreach ($record in $history) {
+                $progress = $arr.Count
+                Write-Progress -Activity "HistoryNinja waiting room." -Status "Processing Browser History: $progress of $hist_count" -PercentComplete ($progress/$hist_count*100)
                 $record.last_visit_time = Get-TimeConversion -date $record.last_visit_time
                 $arr += $record
             }
-        }    
+        }
     }
     else {
         Write-Output "History File Not Found: $fileLocation"
@@ -146,15 +163,16 @@ function Get-BrowserHistoryDate {
         if ($dl)
         {
             $history = Invoke-SqliteQuery -path $fileLocation -Query "SELECT * FROM downloads WHERE start_time > $date"
+            $urlHistory = Invoke-SqliteQuery -path $fileLocation -Query "SELECT * FROM downloads_url_chains"
             $arr = @()
+            $hist_count = $history.Count
             foreach ($record in $history) {
-                $start = $record.start_time/1000000
-                $end = $record.end_time/1000000
-                $record.start_time = ((Get-Date 01.01.1601).AddSeconds($start)).ToString("yyyy-MM-dd HH:mm:ss")
-                $record.end_time = ((Get-Date 01.01.1601).AddSeconds($end)).ToString("yyyy-MM-dd HH:mm:ss")
-                $tzone = Get-TimeZone -Id "Central Standard Time"
-                $record.start_time = [System.DateTime]::Parse($record.start_time).AddHours($tzone.BaseUtcOffset.Hours)
-                $record.end_time = [System.DateTime]::Parse($record.end_time).AddHours($tzone.BaseUtcOffset.Hours)
+                $progress = $arr.Count
+                Write-Progress -Activity "HistoryNinja waiting room." -Status "Processing Browser Download History: $progress of $hist_count" -PercentComplete ($progress/$hist_count*100)
+                $record.start_time = Get-TimeConversion -date $record.start_time
+                $record.end_time = Get-TimeConversion -date $record.end_time
+                $temp = $urlHistory | Where-Object { $_.id -eq $record.id } | Select-Object -ExpandProperty url
+                $record | Add-Member -MemberType NoteProperty -Name "DownloadURL" -Value $temp
                 $arr += $record
             }
         }
@@ -162,11 +180,11 @@ function Get-BrowserHistoryDate {
         {
             $history = Invoke-SqliteQuery -path $fileLocation -Query "SELECT * FROM urls WHERE last_visit_time > $date"
             $arr = @()
+            $hist_count = $history.Count
             foreach ($record in $history) {
-                $temp = $record.last_visit_time/1000000
-                $record.last_visit_time = ((Get-Date 01.01.1601).AddSeconds($temp)).ToString("yyyy-MM-dd HH:mm:ss")
-                $tzone = Get-TimeZone -Id "Central Standard Time"
-                $record.last_visit_time = [System.DateTime]::Parse($record.last_visit_time).AddHours($tzone.BaseUtcOffset.Hours)
+                $progress = $arr.Count
+                Write-Progress -Activity "HistoryNinja waiting room." -Status "Processing Browser History: $progress of $hist_count" -PercentComplete ($progress/$history.Count*100)
+                $record.last_visit_time = Get-TimeConversion -date $record.last_visit_time
                 $arr += $record
             }
         }
@@ -200,18 +218,33 @@ function Get-BrowserHistoryFirefox {
             if ($dl)
             {
                 $history = Invoke-SqliteQuery -path $fileLocation -Query "SELECT * FROM moz_annos"
+                $urlHistory = Invoke-SqliteQuery -path $fileLocation -Query "SELECT * FROM moz_places"
                 $arr = @()
+                $hist_count = $history.Count
                 foreach ($record in $history) {
-                    $record.dateAdded = Get-DateTimeFF -epoch $record.dateAdded
-                    $record.lastModified = Get-DateTimeFF -epoch $record.lastModified
-                    $arr += $record
+                    $progress = $arr.Count
+                    Write-Progress -Activity "HistoryNinja waiting room." -Status "Processing Firefox Download History: $progress of $hist_count" -PercentComplete ($progress/$hist_count*100)
+                    if (($record.anno_attribute_id -eq 2) -and ($arr[-1].place_id -eq $record.place_id)) {
+                        $arr[-1] | Add-Member -MemberType NoteProperty -Name "File_Status" -Value $record.content
+                        $hist_count -= 1
+                    }
+                    else {
+                        $record.dateAdded = Get-DateTimeFF -epoch $record.dateAdded
+                        $record.lastModified = Get-DateTimeFF -epoch $record.lastModified
+                        $temp = $urlHistory | Where-Object { $_.id -eq $record.place_id } | Select-Object -ExpandProperty url
+                        $record | Add-Member -MemberType NoteProperty -Name "DownloadURL" -Value $temp
+                        $arr += $record
+                    }
                 }
             }
             else
             {
                 $history = Invoke-SqliteQuery -path $fileLocation -Query "SELECT * FROM moz_places"
                 $arr = @()
+                $hist_count = $history.Count
                 foreach ($record in $history) {
+                    $progress = $arr.Count
+                    Write-Progress -Activity "HistoryNinja waiting room." -Status "Processing Firefox History: $progress of $hist_count" -PercentComplete ($progress/$history.Count*100)
                     $record.last_visit_date = Get-DateTimeFF -epoch $record.last_visit_date
                     $arr += $record
                 }
@@ -247,18 +280,35 @@ function Get-BrowserHistoryFirefoxDate {
         if ($dl)
         {
             $history = Invoke-SqliteQuery -path $fileLocation -Query "SELECT * FROM moz_annos WHERE dateAdded > $date"
+            $urlHistory = Invoke-SqliteQuery -path $fileLocation -Query "SELECT * FROM moz_places"
             $arr = @()
+            $hist_count = $history.Count
             foreach ($record in $history) {
-                $record.dateAdded = Get-DateTimeFF -epoch $record.dateAdded
-                $record.lastModified = Get-DateTimeFF -epoch $record.lastModified
-                $arr += $record
+                $progress = $arr.Count
+                Write-Progress -Activity "HistoryNinja waiting room." -Status "Processing Firefox Download History: $progress of $hist_count" -PercentComplete ($progress/$hist_count*100)
+                if (($record.anno_attribute_id -eq 2) -and ($arr[-1].place_id -eq $record.place_id)) {
+                    $arr[-1] | Add-Member -MemberType NoteProperty -Name "File_Status" -Value $record.content
+                    $hist_count -= 1
+                }
+                else {
+                    $record.dateAdded = Get-DateTimeFF -epoch $record.dateAdded
+                    $record.lastModified = Get-DateTimeFF -epoch $record.lastModified
+
+                    $temp = $urlHistory | Where-Object { $_.id -eq $record.place_id } | Select-Object -ExpandProperty url
+                    $record | Add-Member -MemberType NoteProperty -Name "DownloadURL" -Value $temp
+
+                    $arr += $record
+                }
             }
         }
         else
         {
             $history = Invoke-SqliteQuery -path $fileLocation -Query "SELECT * FROM moz_places WHERE last_visit_date > $date"
             $arr = @()
+            $hist_count = $history.Count
             foreach ($record in $history) {
+                $progress = $arr.Count
+                Write-Progress -Activity "HistoryNinja waiting room." -Status "Processing Firefox History: $progress of $hist_count" -PercentComplete ($progress/$history.Count*100)
                 $record.last_visit_date = Get-DateTimeFF -epoch $record.last_visit_date
                 $arr += $record
             }
@@ -303,8 +353,8 @@ function Get-EpochTimeff {
 function Get-HelpOutput {
     Write-Output "
         Description:
-            This script will locate the history file for the current user and return the path to the file. 
-            If the path is provided, the script will return the contents of the history file. 
+            This script will locate the history file for the current user and return the path to the file.
+            If the path is provided, the script will return the contents of the history file.
             If a date is provided, the script will return the contents of the history file after the specified date.
 
         Usage: .\HistoryParser.ps1
@@ -323,14 +373,14 @@ function Get-HelpOutput {
             -u: Username of the user. If not specified, the script will attempt to locate the history file for the current user.
             -b: Browser to search for. If not specified, the script will search, and no path is provided the script will end.
             -dl: Download history. If not specified, the script will search for browsing history.
-            -o: Output file. Type the format after the option. 
-                Acceptable formats: CSV, TXT, and JSON. 
+            -o: Output file. Type the format after the option.
+                Acceptable formats: CSV, TXT, and JSON.
                 The resulting file will be in the current working directory: $pwd
                 If not specified, the script will output to the console.
             -h: Help. Displays this help message.
             -a: Author of the script. Displays the author of the script.
             -v: Version of the script. Displays the version of the script.
-            -s: Silent. Suppresses all output to the console. 
+            -s: Silent. Suppresses all output to the console.
                 Except for results when -o is not specified.
         "
         return
@@ -349,9 +399,8 @@ function Get-HelpOutput {
 # $v: Display the version.
 # $o: Output file. Type the format after the option. Accepts CSV, TXT, and JSON.
 # $s: Suppress all output to the console.
-# Returns: $history (array), or $history is output to a file (-o). 
+# Returns: $history (array), or $history is output to a file (-o).
 ###################
-
 function Get-HistoryNinja {
     param (
         [Parameter(Mandatory=$false)]
