@@ -5,7 +5,7 @@
     /_/ /_/_/____/\__/\____/_/   \__, /  /_/ |_/_/_/ /_/_/ /\__,_/  
                                 /____/                /___/         
         BY: Joshua C. Kelley
-        VERSION: 1.0
+        VERSION: 1.0.3
 
 
 ![PowerShell Gallery](https://img.shields.io/powershellgallery/dt/HistoryNinja)
