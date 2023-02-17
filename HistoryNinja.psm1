@@ -108,7 +108,10 @@ function Get-BrowserHistory {
             $history = Invoke-SqliteQuery -path $fileLocation -Query "SELECT * FROM downloads"
             $urlHistory = Invoke-SqliteQuery -path $fileLocation -Query "SELECT * FROM downloads_url_chains"
             $arr = @()
+            $hist_count = $history.Count
             foreach ($record in $history) {
+                $progress = $arr.Count
+                Write-Progress -Activity "HistoryNinja waiting room." -Status "Processing Browser Download History: $progress of $hist_count" -PercentComplete ($progress/$hist_count*100)
                 $record.start_time = Get-TimeConversion -date $record.start_time
                 $record.end_time = Get-TimeConversion -date $record.end_time
                 $temp = $urlHistory | Where-Object { $_.id -eq $record.id } | Select-Object -ExpandProperty url
@@ -120,7 +123,10 @@ function Get-BrowserHistory {
         {
             $history = Invoke-SqliteQuery -path $fileLocation -Query "SELECT * FROM urls"
             $arr = @()
+            $hist_count = $history.Count
             foreach ($record in $history) {
+                $progress = $arr.Count
+                Write-Progress -Activity "HistoryNinja waiting room." -Status "Processing Browser History: $progress of $hist_count" -PercentComplete ($progress/$hist_count*100)
                 $record.last_visit_time = Get-TimeConversion -date $record.last_visit_time
                 $arr += $record
             }
@@ -151,7 +157,10 @@ function Get-BrowserHistoryDate {
             $history = Invoke-SqliteQuery -path $fileLocation -Query "SELECT * FROM downloads WHERE start_time > $date"
             $urlHistory = Invoke-SqliteQuery -path $fileLocation -Query "SELECT * FROM downloads_url_chains"
             $arr = @()
+            $hist_count = $history.Count
             foreach ($record in $history) {
+                $progress = $arr.Count
+                Write-Progress -Activity "HistoryNinja waiting room." -Status "Processing Browser Download History: $progress of $hist_count" -PercentComplete ($progress/$hist_count*100)
                 $record.start_time = Get-TimeConversion -date $record.start_time
                 $record.end_time = Get-TimeConversion -date $record.end_time
                 $temp = $urlHistory | Where-Object { $_.id -eq $record.id } | Select-Object -ExpandProperty url
@@ -163,7 +172,10 @@ function Get-BrowserHistoryDate {
         {
             $history = Invoke-SqliteQuery -path $fileLocation -Query "SELECT * FROM urls WHERE last_visit_time > $date"
             $arr = @()
+            $hist_count = $history.Count
             foreach ($record in $history) {
+                $progress = $arr.Count
+                Write-Progress -Activity "HistoryNinja waiting room." -Status "Processing Browser History: $progress of $hist_count" -PercentComplete ($progress/$history.Count*100)
                 $record.last_visit_time = Get-TimeConversion -date $record.last_visit_time
                 $arr += $record
             }
@@ -200,9 +212,13 @@ function Get-BrowserHistoryFirefox {
                 $history = Invoke-SqliteQuery -path $fileLocation -Query "SELECT * FROM moz_annos"
                 $urlHistory = Invoke-SqliteQuery -path $fileLocation -Query "SELECT * FROM moz_places"
                 $arr = @()
+                $hist_count = $history.Count
                 foreach ($record in $history) {
+                    $progress = $arr.Count
+                    Write-Progress -Activity "HistoryNinja waiting room." -Status "Processing Firefox Download History: $progress of $hist_count" -PercentComplete ($progress/$hist_count*100)
                     if (($record.anno_attribute_id -eq 2) -and ($arr[-1].place_id -eq $record.place_id)) {
                         $arr[-1] | Add-Member -MemberType NoteProperty -Name "File_Status" -Value $record.content
+                        $hist_count -= 1
                     }
                     else {
                         $record.dateAdded = Get-DateTimeFF -epoch $record.dateAdded
@@ -217,7 +233,10 @@ function Get-BrowserHistoryFirefox {
             {
                 $history = Invoke-SqliteQuery -path $fileLocation -Query "SELECT * FROM moz_places"
                 $arr = @()
+                $hist_count = $history.Count
                 foreach ($record in $history) {
+                    $progress = $arr.Count
+                    Write-Progress -Activity "HistoryNinja waiting room." -Status "Processing Firefox History: $progress of $hist_count" -PercentComplete ($progress/$history.Count*100)
                     $record.last_visit_date = Get-DateTimeFF -epoch $record.last_visit_date
                     $arr += $record
                 }
@@ -255,9 +274,13 @@ function Get-BrowserHistoryFirefoxDate {
             $history = Invoke-SqliteQuery -path $fileLocation -Query "SELECT * FROM moz_annos WHERE dateAdded > $date"
             $urlHistory = Invoke-SqliteQuery -path $fileLocation -Query "SELECT * FROM moz_places"
             $arr = @()
+            $hist_count = $history.Count
             foreach ($record in $history) {
+                $progress = $arr.Count
+                Write-Progress -Activity "HistoryNinja waiting room." -Status "Processing Firefox Download History: $progress of $hist_count" -PercentComplete ($progress/$hist_count*100)
                 if (($record.anno_attribute_id -eq 2) -and ($arr[-1].place_id -eq $record.place_id)) {
                     $arr[-1] | Add-Member -MemberType NoteProperty -Name "File_Status" -Value $record.content
+                    $hist_count -= 1
                 }
                 else {
                     $record.dateAdded = Get-DateTimeFF -epoch $record.dateAdded
@@ -274,7 +297,10 @@ function Get-BrowserHistoryFirefoxDate {
         {
             $history = Invoke-SqliteQuery -path $fileLocation -Query "SELECT * FROM moz_places WHERE last_visit_date > $date"
             $arr = @()
+            $hist_count = $history.Count
             foreach ($record in $history) {
+                $progress = $arr.Count
+                Write-Progress -Activity "HistoryNinja waiting room." -Status "Processing Firefox History: $progress of $hist_count" -PercentComplete ($progress/$history.Count*100)
                 $record.last_visit_date = Get-DateTimeFF -epoch $record.last_visit_date
                 $arr += $record
             }
