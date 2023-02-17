@@ -31,15 +31,15 @@ Import-Module PSSQLite
 $versionOut = "1.0.1"
 $authorOut = "Joshua C. Kelley"
 
-# Banner Function  
+# Banner Function
 $banner = @"
 
-        __  ___      __                      _   ___         _      
+        __  ___      __                      _   ___         _
        / / / (_)____/ /_____  _______  __   / | / (_)___    (_)___ _
       / /_/ / / ___/ __/ __ \/ ___/ / / /  /  |/ / / __ \  / / __ `/
-     / __  / (__  ) /_/ /_/ / /  / /_/ /  / /|  / / / / / / / /_/ / 
-    /_/ /_/_/____/\__/\____/_/   \__, /  /_/ |_/_/_/ /_/_/ /\__,_/  
-                                /____/                /___/         
+     / __  / (__  ) /_/ /_/ / /  / /_/ /  / /|  / / / / / / / /_/ /
+    /_/ /_/_/____/\__/\____/_/   \__, /  /_/ |_/_/_/ /_/_/ /\__,_/
+                                /____/                /___/
 
         BY: $authorOut
         VERSION: $versionOut
@@ -130,7 +130,7 @@ function Get-BrowserHistory {
                 $record.last_visit_time = Get-TimeConversion -date $record.last_visit_time
                 $arr += $record
             }
-        }    
+        }
     }
     else {
         Write-Output "History File Not Found: $fileLocation"
@@ -345,8 +345,8 @@ function Get-EpochTimeff {
 function Get-HelpOutput {
     Write-Output "
         Description:
-            This script will locate the history file for the current user and return the path to the file. 
-            If the path is provided, the script will return the contents of the history file. 
+            This script will locate the history file for the current user and return the path to the file.
+            If the path is provided, the script will return the contents of the history file.
             If a date is provided, the script will return the contents of the history file after the specified date.
 
         Usage: .\HistoryParser.ps1
@@ -365,14 +365,14 @@ function Get-HelpOutput {
             -u: Username of the user. If not specified, the script will attempt to locate the history file for the current user.
             -b: Browser to search for. If not specified, the script will search, and no path is provided the script will end.
             -dl: Download history. If not specified, the script will search for browsing history.
-            -o: Output file. Type the format after the option. 
-                Acceptable formats: CSV, TXT, and JSON. 
+            -o: Output file. Type the format after the option.
+                Acceptable formats: CSV, TXT, and JSON.
                 The resulting file will be in the current working directory: $pwd
                 If not specified, the script will output to the console.
             -h: Help. Displays this help message.
             -a: Author of the script. Displays the author of the script.
             -v: Version of the script. Displays the version of the script.
-            -s: Silent. Suppresses all output to the console. 
+            -s: Silent. Suppresses all output to the console.
                 Except for results when -o is not specified.
         "
         return
@@ -391,7 +391,7 @@ function Get-HelpOutput {
 # $v: Display the version.
 # $o: Output file. Type the format after the option. Accepts CSV, TXT, and JSON.
 # $s: Suppress all output to the console.
-# Returns: $history (array), or $history is output to a file (-o). 
+# Returns: $history (array), or $history is output to a file (-o).
 ###################
 function Get-HistoryNinja {
     param (
