@@ -12,7 +12,7 @@
 ![PowerShell Gallery Version](https://img.shields.io/powershellgallery/v/HistoryNinja.svg?style=for-the-badge)
 ![GitHub commits since latest release (by date)](https://img.shields.io/github/commits-since/JCKelley-CYBR/HistoryNinja/latest.svg?style=for-the-badge)
 [![License](https://img.shields.io/github/license/JCKelley-CYBR/HistoryNinja.svg?style=for-the-badge)](LICENSE)
-[![GitHub issues](https://img.shields.io/github/issues/JCKelley-CYBR/HistoryNinja.svg?style=for-the-badge)]
+![GitHub issues](https://img.shields.io/github/issues/JCKelley-CYBR/HistoryNinja.svg?style=for-the-badge)
 [![CodeFactor](https://www.codefactor.io/repository/github/jckelley-cybr/historyninja/badge/main)](https://www.codefactor.io/repository/github/jckelley-cybr/historyninja/overview/main)
 
 ## Description
