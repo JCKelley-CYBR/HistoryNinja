@@ -70,7 +70,7 @@ PS C:\> Get-HistoryNinja -p <Path> -d <From Date> -o <output file type>
 | -p | String | X if not -u | C:\Users\HistoryNinja\Downloads\History | Set path of history file to parse. |
 | -d | String || `12/12/22` | Set history from date. |
 | -u | String | X if not -p | john.doe | Username of the user to parse. |
-| -b | String | X if using -u | `Chrome`, `FireFox`, `Edge` | Browser to parse. Currently, only Chrome is supported. |
+| -b | String | X if using -u | `Chrome`, `FireFox`, `Edge` | Browser to parse. Currently, only Chromium based browsers and Firefox is supported. |
 | -o | String || `CSV`, `TXT`, `JSON` | Output file type. Currently, only CSV, TXT, and JSON are supported. |
 | -dl | Switch ||| Output browser download history. |
 | -h | Switch ||| Displays this help message. |
