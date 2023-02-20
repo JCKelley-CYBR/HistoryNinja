@@ -24,6 +24,7 @@ This script parses browser history files and extracts page titles, URLs, and tim
 * [PSSQLite](https://www.powershellgallery.com/packages/PSSQLite/1.1.0)
   * Supports PowerShell 2.0 and higher.
   * `PS> Install-Module -Name PSSQLite`
+  * If you install the module from the PowerShell Gallery, it will **automatically** install the dependencies.
 
 ## Installation
 ### PS Gallery Installation
@@ -35,6 +36,7 @@ This script parses browser history files and extracts page titles, URLs, and tim
 #### 2. Unzip the contents of the archive. You should have a folder named `HistoryNinja` with the following files:
    * `HistoryNinja.psd1` - This is the module manifest.
    * `HistoryNinja.psm1` - This is the module.
+   * `LICENSE` - The [license](LICENSE) file.
    * `README.md` - This file you are currently reading.
 #### 3. Copy the `HistoryNinja` folder to one of the following locations:
    * `$env:PSModulePath` - any of these folders will do.
@@ -63,18 +65,18 @@ PS C:\> Get-HistoryNinja -p <Path> -d <From Date> -o <output file type>
 
 
 ## Parameters
-| Parameter | Description |
-|-----------|-------------|
-| -p | Set path of history file to parse. |
-| -d | Set history from date. |
-| -u | Username of the user to parse. |
-| -b | Browser to parse. Currently, only Chrome is supported. |
-| -dl | Output browser download history. |
-| -o | Output file type. Currently, only CSV, TXT, and JSON are supported. |
-| -h | Displays this help message. |
-| -a | Displays the author of the script. |
-| -v | Displays the version of the script. |
-| -s | Silent. Suppresses all output to the console. Except for results when -o is not specified.|
+| Parameter | Type | Required | Value(s)/Examples | Description |
+|-----------|------|----------|----------|-------------|
+| -p | String | X if not -u | C:\Users\HistoryNinja\Downloads\History | Set path of history file to parse. |
+| -d | String || `12/12/22` | Set history from date. |
+| -u | String | X if not -p | john.doe | Username of the user to parse. |
+| -b | String | X if using -u | `Chrome`, `FireFox`, `Edge` | Browser to parse. Currently, only Chrome is supported. |
+| -o | String || `CSV`, `TXT`, `JSON` | Output file type. Currently, only CSV, TXT, and JSON are supported. |
+| -dl | Switch ||| Output browser download history. |
+| -h | Switch ||| Displays this help message. |
+| -a | Switch ||| Displays the author of the script. |
+| -v | Switch ||| Displays the version of the script. |
+| -s | Switch ||| Silent. Suppresses all output to the console. Except for results when -o is not specified.|
 
 ## License
 This project is licensed under the GNU General Public License v3.0 - see the [LICENSE](LICENSE) file for details
