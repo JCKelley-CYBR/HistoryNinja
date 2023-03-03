@@ -27,6 +27,11 @@
 # - Added association between moz_places and moz_annos, essentially adding download URL information to the download records. (Firefox)
 # - Added association between moz_annos records, essentially firefox download records store each download in more than one record. By combining the unique fields, we can get the full download record. (Firefox)
 # - Added progress bar to show progress of the processing of records.
+# Version 1.0.4 - 2023-03-2:
+# - Added -filter parameter to allow for filtering of the results.
+# - Added -field to select which field to filter on.
+# - Added -top to limit the return to the first N results.
+# - Added -tail to limit the return to the last N results.
 ###################
 
 Import-Module PSSQLite
@@ -36,7 +41,7 @@ Import-Module PSSQLite
 ###################
 
 # Script Attributes
-$versionOut = "1.0.3"
+$versionOut = "1.0.4"
 $authorOut = "Joshua C. Kelley"
 
 # Banner Function
