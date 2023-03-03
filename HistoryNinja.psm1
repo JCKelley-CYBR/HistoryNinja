@@ -32,6 +32,8 @@
 # - Added -field to select which field to filter on.
 # - Added -top to limit the return to the first N results.
 # - Added -tail to limit the return to the last N results.
+# Version 1.0.5 - 2023-03-3:
+# - Fixed -h help content to include the new parameters.
 ###################
 
 Import-Module PSSQLite
@@ -41,7 +43,7 @@ Import-Module PSSQLite
 ###################
 
 # Script Attributes
-$versionOut = "1.0.4"
+$versionOut = "1.0.5"
 $authorOut = "Joshua C. Kelley"
 
 # Banner Function
@@ -555,6 +557,10 @@ function Get-HelpOutput {
                 Acceptable formats: CSV, TXT, and JSON.
                 The resulting file will be in the current working directory: $pwd
                 If not specified, the script will output to the console.
+            -filter: Filter the results by a string.
+            -field: Field to filter the results by.
+            -top: Return the top X results.
+            -tail: Return the last X results.
             -h: Help. Displays this help message.
             -a: Author of the script. Displays the author of the script.
             -v: Version of the script. Displays the version of the script.
@@ -572,6 +578,10 @@ function Get-HelpOutput {
 # $u: The username to search for.
 # $b: The browser to search for.
 # $d: Switches query to downloads table in the History File.
+# $filter: Filter the results by a string.
+# $field: Field to filter the results by.
+# $top: Return the top X results.
+# $tail: Return the last X results.
 # $h: Display the help context.
 # $a: Display the author.
 # $v: Display the version.
