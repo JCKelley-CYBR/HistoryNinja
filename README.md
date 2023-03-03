@@ -5,7 +5,7 @@
     /_/ /_/_/____/\__/\____/_/   \__, /  /_/ |_/_/_/ /_/_/ /\__,_/  
                                 /____/                /___/         
         BY: Joshua C. Kelley
-        VERSION: 1.0.3
+        VERSION: 1.0.4
 
 
 ![PowerShell Gallery](https://img.shields.io/powershellgallery/dt/HistoryNinja.svg?style=for-the-badge)
@@ -72,11 +72,21 @@ PS C:\> Get-HistoryNinja -p <Path> -d <From Date> -o <output file type>
 | -u | String | X if not -p | john.doe | Username of the user to parse. |
 | -b | String | X if using -u | `Chrome`, `FireFox`, `Edge` | Browser to parse. Currently, only Chromium based browsers and Firefox is supported. |
 | -o | String || `CSV`, `TXT`, `JSON` | Output file type. Currently, only CSV, TXT, and JSON are supported. |
+| -filter | String || `microsoft` or `microsoft.com` | Filter results for matching strings like the input. |
+| -field | String | required if using -filter | `Title`, `URL` | Selects field to compare filter with. |
+| -top | Int || `10` | Returns the top X results. |
+| -tail | Int || `10` | Returns the last X results. |
 | -dl | Switch ||| Output browser download history. |
 | -h | Switch ||| Displays this help message. |
 | -a | Switch ||| Displays the author of the script. |
 | -v | Switch ||| Displays the version of the script. |
 | -s | Switch ||| Silent. Suppresses all output to the console. Except for results when -o is not specified.|
+
+## To Do
+* Add support for querying multiple browsers at once.
+* Add support for querying multiple users at once.
+* Add support for filtering more fields.
+
 
 ## License
 This project is licensed under the GNU General Public License v3.0 - see the [LICENSE](LICENSE) file for details
