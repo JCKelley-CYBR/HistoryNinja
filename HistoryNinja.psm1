@@ -531,6 +531,7 @@ function Get-EpochTimeff {
 # Returns: None
 ###################
 function Get-HelpOutput {
+    $banner
     Write-Output "
         Description:
             This script will locate the history file for the current user and return the path to the file.
@@ -572,7 +573,7 @@ function Get-HelpOutput {
 
 ###################
 # Description: This function will return the contents of the history file - Main function of the module.
-# Params: $p, $d, $u, $b, $h, $a, $v, $o, $s
+# Params: $p, $d, $u, $b, $h, $a, $v, $o, $s, $filter, $field, $top, $tail, $dl
 # $p: User provided path to the history file.
 # $d: FROM date to search for.
 # $u: The username to search for.
@@ -610,6 +611,7 @@ function Get-HistoryNinja {
         [ValidateRange (0,5000)]
         [int]$top, # Top N results
         [Parameter(Mandatory=$false)]
+        [ValidateRange (0,5000)]
         [int]$tail, # Bottom N results
         [Parameter(Mandatory=$false)]
         [switch]$h, # Help
@@ -628,9 +630,6 @@ function Get-HistoryNinja {
     $firefox = "C:\Users\$u\AppData\Roaming\Mozilla\Firefox\Profiles\*.default-release\places.sqlite"
     $edge = "C:\Users\$u\AppData\Local\Microsoft\Edge\User Data\Default\History"
 
-    if (!$s) {
-        $banner
-    }
     # Set the error action preference to silently continue
     $ErrorActionPreference= 'silentlycontinue'
 
